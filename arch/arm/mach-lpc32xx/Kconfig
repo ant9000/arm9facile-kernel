@@ -36,12 +36,12 @@ config ARM9FACILE_400X272_LCD
         help
           Use 400x272 LCD display
 
-config ARM9FACILE_800x480_LCD
+config ARM9FACILE_800X480_LCD
         bool "800x480 LCD display"
         help
           Use 800x480 LCD display
 
-config ARM9FACILE_800x600_LCD
+config ARM9FACILE_800X600_LCD
         bool "800x600 LCD display"
         help
           Use 800x600 LCD display

@@ -77,7 +77,7 @@ static struct clcd_panel conn_lcd_panel = {
                 .lower_margin   = 1,
                 .hsync_len      = 35,
                 .vsync_len      = 45,
-#elif defined  (CONFIG_ARM9FACILE_800X480_LCD)
+#elif defined (CONFIG_ARM9FACILE_800X600_LCD)
                 .name           = "800x600 @ 60",
                 .refresh        = 60,
                 .xres           = 800,
