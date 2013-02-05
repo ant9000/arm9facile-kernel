@@ -79,18 +79,13 @@ static struct snd_soc_ops arm9facile_wm8731_ops = {
 };
 
 static const struct snd_soc_dapm_widget arm9facile_dapm_widgets[] = {
-	SND_SOC_DAPM_MIC("Int Mic", NULL),
-	SND_SOC_DAPM_SPK("Ext Spk", NULL),
+	SND_SOC_DAPM_HP("Headphone Jack", NULL),
 };
 
 static const struct snd_soc_dapm_route intercon[] = {
-
-	/* speaker connected to LHPOUT */
-	{"Ext Spk", NULL, "LHPOUT"},
-
-	/* mic is connected to Mic Jack, with WM8731 Mic Bias */
-	{"MICIN", NULL, "Mic Bias"},
-	{"Mic Bias", NULL, "Int Mic"},
+	/* headphone connected to LHPOUT, RHPOUT */
+	{"Headphone Jack", NULL, "LHPOUT"},
+	{"Headphone Jack", NULL, "RHPOUT"},
 };
 
 /*
@@ -114,19 +109,17 @@ static int arm9facile_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
+        snd_soc_dapm_nc_pin(dapm, "LLINEIN");
+        snd_soc_dapm_nc_pin(dapm, "RLINEIN");
+        snd_soc_dapm_nc_pin(dapm, "LOUT");
+        snd_soc_dapm_nc_pin(dapm, "ROUT");
+        snd_soc_dapm_enable_pin(dapm, "MICIN");
+
 	/* Add specific widgets */
 	snd_soc_dapm_new_controls(dapm, arm9facile_dapm_widgets,
 				  ARRAY_SIZE(arm9facile_dapm_widgets));
 	/* Set up specific audio path interconnects */
 	snd_soc_dapm_add_routes(dapm, intercon, ARRAY_SIZE(intercon));
-
-	/* not connected */
-	snd_soc_dapm_nc_pin(dapm, "RLINEIN");
-	snd_soc_dapm_nc_pin(dapm, "LLINEIN");
-
-	/* always connected */
-	snd_soc_dapm_enable_pin(dapm, "Int Mic");
-	snd_soc_dapm_enable_pin(dapm, "Ext Spk");
 
 	snd_soc_dapm_sync(dapm);
 
@@ -158,8 +151,8 @@ static int __init arm9facile_init(void)
 {
 	int ret = 0;
 
-	arm9facile_snd_device = platform_device_alloc("soc-audio", 0);
-	if (arm9facile_snd_device == NULL) {
+	arm9facile_snd_device = platform_device_alloc("soc-audio", -1);
+	if (!arm9facile_snd_device) {
 		return -ENOMEM;
 	}
 
