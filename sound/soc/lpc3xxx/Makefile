@@ -9,4 +9,4 @@ snd-soc-lpc3xxx-uda1380-objs := lpc3xxx-uda1380.o
 snd-soc-lpc3xxx-wm8731-objs := lpc3xxx-wm8731.o
 
 obj-$(CONFIG_SND_LPC3XXX_SOC_I2S_UDA1380) += snd-soc-lpc3xxx-uda1380.o
-#obj-$(CONFIG_SND_LPC3XXX_SOC_I2S_WM8731) += snd-soc-lpc3xxx-wm8731.o
+obj-$(CONFIG_SND_LPC3XXX_SOC_I2S_WM8731) += snd-soc-lpc3xxx-wm8731.o
