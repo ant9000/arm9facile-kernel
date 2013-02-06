@@ -208,6 +208,6 @@ module_init(arm9facile_init);
 module_exit(arm9facile_exit);
 
 /* Module information */
-MODULE_AUTHOR("Sedji Gaouaou <sedji.gaouaou@atmel.com>");
-MODULE_DESCRIPTION("ALSA SoC AT91SAM9G20EK_WM8731");
+MODULE_AUTHOR("Antonio Galea <antonio.galea@gmail.com>");
+MODULE_DESCRIPTION("ALSA SoC LPC3xxx WM8731");
 MODULE_LICENSE("GPL");
