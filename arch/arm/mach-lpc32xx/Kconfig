@@ -33,6 +33,7 @@ menu "Arm9facile Display Selection"
 
 config ARM9FACILE_400X272_LCD
         bool "400x272 LCD display"
+	default y
         help
           Use 400x272 LCD display
 
