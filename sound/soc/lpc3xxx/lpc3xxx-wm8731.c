@@ -57,7 +57,22 @@ static int arm9facile_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
-	int ret;
+	unsigned int clk = 0;
+	int ret = 0;
+
+	switch (params_rate(params)) {
+	case 8000:
+	case 16000:
+	case 48000:
+	case 96000:
+		clk = 12288000;
+		break;
+	case 11025:
+	case 22050:
+	case 44100:
+		clk = 11289600;
+		break;
+	}
 
 	/* set codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S |
@@ -71,6 +86,12 @@ static int arm9facile_hw_params(struct snd_pcm_substream *substream,
 	if (ret < 0)
 		return ret;
 
+	/* set the codec system clock for DAC and ADC */
+	ret = snd_soc_dai_set_sysclk(codec_dai, WM8731_SYSCLK_XTAL, clk,
+		SND_SOC_CLOCK_IN);
+	if (ret < 0)
+		return ret;
+
 	return 0;
 }
 
@@ -80,12 +101,14 @@ static struct snd_soc_ops arm9facile_wm8731_ops = {
 
 static const struct snd_soc_dapm_widget arm9facile_dapm_widgets[] = {
 	SND_SOC_DAPM_HP("Headphone Jack", NULL),
+        SND_SOC_DAPM_MIC("Mic Jack", NULL),
 };
 
 static const struct snd_soc_dapm_route intercon[] = {
 	/* headphone connected to LHPOUT, RHPOUT */
 	{"Headphone Jack", NULL, "LHPOUT"},
 	{"Headphone Jack", NULL, "RHPOUT"},
+	{"MICIN", NULL, "Mic Jack"},
 };
 
 /*
