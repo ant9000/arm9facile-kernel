@@ -57,38 +57,27 @@ static int arm9facile_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
-	unsigned int clk = 0;
 	int ret = 0;
 
-	switch (params_rate(params)) {
-	case 8000:
-	case 16000:
-	case 48000:
-	case 96000:
-		clk = 12288000;
-		break;
-	case 11025:
-	case 22050:
-	case 44100:
-		clk = 11289600;
-		break;
+	/* Set the CPU I2S rate clock (first) */
+	ret = snd_soc_dai_set_sysclk(cpu_dai, 0, params_rate(params),
+					    SND_SOC_CLOCK_OUT);
+	if (ret < 0) {
+		pr_warning("%s: "
+			   "Failed to set I2S clock (%d)\n",
+			   SND_MODNAME, ret);
+		return ret;
 	}
 
 	/* set codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S |
-		SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBM_CFM);
+		SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBS_CFS);
 	if (ret < 0)
 		return ret;
 
 	/* set cpu DAI configuration */
 	ret = snd_soc_dai_set_fmt(cpu_dai, SND_SOC_DAIFMT_I2S |
-		SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBM_CFM);
-	if (ret < 0)
-		return ret;
-
-	/* set the codec system clock for DAC and ADC */
-	ret = snd_soc_dai_set_sysclk(codec_dai, WM8731_SYSCLK_XTAL, clk,
-		SND_SOC_CLOCK_IN);
+		SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_CBS_CFS);
 	if (ret < 0)
 		return ret;
 
@@ -117,32 +106,24 @@ static const struct snd_soc_dapm_route intercon[] = {
 static int arm9facile_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
-	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
-	int ret;
 
 	printk(KERN_DEBUG
 			"arm9facile_wm8731 "
 			": arm9facile_wm8731_init() called\n");
-
-	ret = snd_soc_dai_set_sysclk(codec_dai, WM8731_SYSCLK_XTAL,
-		MCLK_RATE, SND_SOC_CLOCK_IN);
-	if (ret < 0) {
-		printk(KERN_ERR "Failed to set WM8731 SYSCLK: %d\n", ret);
-		return ret;
-	}
-
-        snd_soc_dapm_nc_pin(dapm, "LLINEIN");
-        snd_soc_dapm_nc_pin(dapm, "RLINEIN");
-        snd_soc_dapm_nc_pin(dapm, "LOUT");
-        snd_soc_dapm_nc_pin(dapm, "ROUT");
-        snd_soc_dapm_enable_pin(dapm, "MICIN");
 
 	/* Add specific widgets */
 	snd_soc_dapm_new_controls(dapm, arm9facile_dapm_widgets,
 				  ARRAY_SIZE(arm9facile_dapm_widgets));
 	/* Set up specific audio path interconnects */
 	snd_soc_dapm_add_routes(dapm, intercon, ARRAY_SIZE(intercon));
+
+        snd_soc_dapm_nc_pin(dapm, "LLINEIN");
+        snd_soc_dapm_nc_pin(dapm, "RLINEIN");
+        snd_soc_dapm_nc_pin(dapm, "LOUT");
+        snd_soc_dapm_nc_pin(dapm, "ROUT");
+        snd_soc_dapm_enable_pin(dapm, "MICIN");
+	snd_soc_dapm_enable_pin(dapm, "Headphone Jack");
 
 	snd_soc_dapm_sync(dapm);
 
@@ -153,7 +134,11 @@ static struct snd_soc_dai_link arm9facile_wm8731_dai[] = {
         {
 		.name           = "WM8731",
 		.stream_name    = "WM8731 PCM",
-		.cpu_dai_name   = "lpc3xxx-i2s0",
+#if defined(CONFIG_SND_LPC32XX_USEI2S1)
+		.cpu_dai_name	= "lpc3xxx-i2s1",
+#else
+		.cpu_dai_name	= "lpc3xxx-i2s0",
+#endif
 		.codec_dai_name = "wm8731-hifi",
 		.init           = arm9facile_wm8731_init,
 		.platform_name	= "lpc3xxx-audio.0",
