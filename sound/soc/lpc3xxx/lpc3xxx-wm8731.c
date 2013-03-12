@@ -106,12 +106,20 @@ static const struct snd_soc_dapm_route intercon[] = {
 static int arm9facile_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_codec *codec = rtd->codec;
+	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	struct snd_soc_dapm_context *dapm = &codec->dapm;
+	int ret;
 
 	printk(KERN_DEBUG
 			"arm9facile_wm8731 "
 			": arm9facile_wm8731_init() called\n");
 
+	ret = snd_soc_dai_set_sysclk(codec_dai, WM8731_SYSCLK_MCLK,
+		MCLK_RATE, SND_SOC_CLOCK_IN);
+	if (ret < 0) {
+		printk(KERN_ERR "Failed to set WM8731 SYSCLK: %d\n", ret);
+		return ret;
+	}
 	/* Add specific widgets */
 	snd_soc_dapm_new_controls(dapm, arm9facile_dapm_widgets,
 				  ARRAY_SIZE(arm9facile_dapm_widgets));
