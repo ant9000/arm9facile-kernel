@@ -396,6 +396,7 @@ struct mmci_platform_data lpc32xx_plat_data = {
 	.gpio_wp        = -1, //MMC_WP_GPIO,
 	.gpio_cd        = -1, //MMC_CD_GPIO,
 	//.cd_invert = true,
+	.f_max          = 10000000,
 };
 
 /*
