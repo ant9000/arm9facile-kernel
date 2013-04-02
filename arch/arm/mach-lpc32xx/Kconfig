@@ -35,13 +35,14 @@ choice
     help
        Select type of LCD display to be used.
 
-config ARM9FACILE_400X272_LCD
-    bool "400x272 LCD display"
+config ARM9FACILE_480X272_LCD
+    bool "480x272 LCD display"
     help
-      Use 400x272 LCD display
+       Use 480x272 LCD display
 
 config ARM9FACILE_800X480_LCD
     bool "800x480 LCD display"
+    default y
     help
       Use 800x480 LCD display
 
