@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux/arm 2.6.39.2 Kernel Configuration
-# Wed Feb  6 16:43:30 2013
+# Tue Apr  2 15:10:53 2013
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -258,13 +258,10 @@ CONFIG_ARCH_LPC32XX=y
 # CONFIG_MACH_EA3250 is not set
 # CONFIG_MACH_FDI3250 is not set
 CONFIG_MACH_ARM9FACILE=y
-
-#
-# Arm9facile Display Selection
-#
-# CONFIG_ARM9FACILE_400X272_LCD is not set
-CONFIG_ARM9FACILE_800X480_LCD=y
+CONFIG_ARM9FACILE_400X272_LCD=y
+# CONFIG_ARM9FACILE_800X480_LCD is not set
 # CONFIG_ARM9FACILE_800X600_LCD is not set
+CONFIG_ARM9FACILE_PWM_DEVICE=y
 
 #
 # Standard UARTS

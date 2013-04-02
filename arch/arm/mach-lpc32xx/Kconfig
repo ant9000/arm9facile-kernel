@@ -28,27 +28,35 @@ choice
 
 endchoice
 
-menu "Arm9facile Display Selection"
-        depends on MACH_ARM9FACILE
+choice 
+    prompt "Arm9facile Display Selection"
+    depends on MACH_ARM9FACILE
+    default ARM9FACILE_400X272_LCD
+    help
+       Select type of LCD display to be used.
 
 config ARM9FACILE_400X272_LCD
-        bool "400x272 LCD display"
-	default y
-        help
-          Use 400x272 LCD display
+    bool "400x272 LCD display"
+    help
+      Use 400x272 LCD display
 
 config ARM9FACILE_800X480_LCD
-        bool "800x480 LCD display"
-        help
-          Use 800x480 LCD display
+    bool "800x480 LCD display"
+    help
+      Use 800x480 LCD display
 
 config ARM9FACILE_800X600_LCD
-        bool "800x600 LCD display"
-        help
-          Use 800x600 LCD display
+    bool "800x600 LCD display"
+    help
+      Use 800x600 LCD display
+endchoice
 
-endmenu
-
+config ARM9FACILE_PWM_DEVICE
+    bool "Arm9facile PWM char device"
+    depends on MACH_ARM9FACILE
+    default TRUE
+    help
+      Say Y to enable support for PWM char device driver
 
 
 config SOM9DIMM3250_LCD_PANEL
