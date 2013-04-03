@@ -1,2 +1,2 @@
-obj-$(CONFIG_ARM9FACILE) += LPC3250_pwm_simple.o
+obj-$(CONFIG_ARM9FACILE_PWM_DEVICE) += LPC3250_pwm_simple.o
 
