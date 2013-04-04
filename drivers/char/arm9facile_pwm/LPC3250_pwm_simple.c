@@ -119,7 +119,7 @@ static int __init LPC3250_pwm_simple_init(void)
     }  
     
     /* init device values */
-    LPC3250_pwm_simple_devp -> PWM0_value = 0;
+    LPC3250_pwm_simple_devp -> PWM0_value = 255;
     
     /* connect the file operations with the cdev */
     cdev_init(&(LPC3250_pwm_simple_devp->cdev), &LPC3250_pwm_simple_fops);
@@ -202,12 +202,23 @@ ssize_t LPC3250_pwm_simple_read(struct file *file, char __user * buf, size_t cou
 {
     char string[READ_BUFFER_SIZE];
     struct LPC3250_pwm_simple_dev *LPC3250_pwm_simple_devp = file->private_data;
+    int value;
     
 #ifdef DEBUG    
     printk("LPC3250_pwm_simple_read\n");
 #endif
 
-    sprintf(string, "%3d", LPC3250_pwm_simple_devp -> PWM0_value);
+	value = LPC3250_pwm_simple_devp -> PWM0_value;
+    /* limiting input value to maximum in 8 bit range */
+    if( value > 255 ) value = 255;
+
+	/* scaling value to have an ascending progression */
+    /* from 0 (disabled), 1 (max) .. 255 (min)        */
+    /* to   0 (disabled), 1 (min) .. 255 (max)        */
+    
+    value = (256 - value) & 0xFF;
+    
+    sprintf(string, "%3d", value);
     
     if(*ppos>2) return(0);
     
@@ -256,7 +267,7 @@ ssize_t LPC3250_pwm_simple_write(struct file *file, const char __user * buf, siz
     	return(-EIO);
     }
     
-    /* limitating input value to maximum in 8 bit range */
+    /* limiting input value to maximum in 8 bit range */
     if( value > 255 ) value = 255;
 
 	/* scaling value to have an ascending progression */
